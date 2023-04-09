@@ -6,8 +6,8 @@ import processing.core.PApplet;
 public class Square extends PApplet {
 	int val;
 	int[] pos = new int[2];
-	int x = (int)this.getCoords()[0];
-	int y = (int)this.getCoords()[1];
+	int x = (int)this.getCoords()[1];
+	int y = (int)this.getCoords()[0];
 	private static Map<Integer, Integer[]> colors = new HashMap<Integer, Integer[]>();
 	public float width = 120;
 	public float height = 120;
@@ -56,7 +56,9 @@ public class Square extends PApplet {
 		}
 	}
 	
-	
+	public Square[] getNeighbors() {
+		return new Square[] {this.up, this.down, this.left, this.right};
+	}
 	
 //	void display() {
 //    	Integer[] color = this.getColor();

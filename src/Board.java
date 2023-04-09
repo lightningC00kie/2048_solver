@@ -1,20 +1,20 @@
 import java.util.ArrayList;
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+//import java.util.Map;
 import java.util.Random;
 
 public class Board {
 	private int boardSize = 4;
 	public List<Square> squares = new ArrayList<Square>();
 	public Square[][] grid = new Square[boardSize][boardSize];
-	
+//	private Direction prevMove;
 	public Board() {
 		this.addSquare();
 	}
 	
 	public boolean gameOver() {
-		if (squares.size() == 16) {
+		if (squares.size() == 16 && !canMerge()) {
 			return true;
 		}
 		return false;
@@ -23,9 +23,11 @@ public class Board {
 	public void addSquare() {
 		squares.add(generateSquare());
 		updateGrid();
+		writeBoard();
 	}
 	
 	public void moveSquares (Direction d) {
+		boolean hasMoved = false;
 		if (d == Direction.up) {
 			System.out.println("moving up");
 			
@@ -33,15 +35,25 @@ public class Board {
 				for (int j = 0; j < boardSize; j++) {
 					if (grid[i][j] != null) {
 						Square s  = grid[i][j];
-						while(withinBounds(s, d) && s.up == null) {
+						while(withinBounds(s, d)) {
 							// get the neighbors before moving to guarantee that the square can move
-							setNeighbors(s);
-							s.move(d);
+							if (s.up == null) {
+								s.move(d);
+								setNeighbors(s);
+								updateGrid();	
+							}
+							else if (s.val == s.up.val){
+								mergeSquares(s.up, s);
+								break;
+							}
+							else {
+								break;
+							}
+							hasMoved = true;
 						}
 					}
 				}
 				// update the grid after moving each square so that next square can move
-				updateGrid();
 			}
 		}
 		
@@ -52,13 +64,23 @@ public class Board {
 				for (int j = boardSize - 1; j >= 0; j--) {
 					if (grid[i][j] != null) {
 						Square s  = grid[i][j];
-						while(withinBounds(s, d) && s.right == null) {
-							setNeighbors(s);
-							s.move(d);
+						while(withinBounds(s, d)) {
+							if (s.right == null) {
+								s.move(d);
+								setNeighbors(s);
+								updateGrid();	
+							}
+							else if (s.val == s.right.val){
+								mergeSquares(s.right, s);
+								break;
+							}
+							else {
+								break;
+							}
+							hasMoved = true;
 						}
 					}
 				}
-				updateGrid();
 			}
 		}
 		
@@ -69,13 +91,23 @@ public class Board {
 				for (int j = 0; j < boardSize; j++) {
 					if (grid[i][j] != null) {
 						Square s  = grid[i][j];
-						while(withinBounds(s, d) && s.left == null) {
-							setNeighbors(s);
-							s.move(d);
+						while(withinBounds(s, d)) {
+							if (s.left == null) {
+								s.move(d);
+								setNeighbors(s);
+								updateGrid();	
+							}
+							else if (s.val == s.left.val){
+								mergeSquares(s.left, s);
+								break;
+							}
+							else {
+								break;
+							}
+							hasMoved = true;
 						}
 					}
 				}
-				updateGrid();
 			}
 		}
 		
@@ -86,44 +118,56 @@ public class Board {
 				for (int j = 0; j < boardSize; j++) {
 					if (grid[i][j] != null) {
 						Square s  = grid[i][j];
-						while(withinBounds(s, d) && s.down == null) {
-							setNeighbors(s);
-							s.move(d);
+						while(withinBounds(s, d)) {
+							if (s.down == null) {
+								s.move(d);
+								setNeighbors(s);
+								updateGrid();	
+							}
+							else if (s.val == s.down.val){
+								mergeSquares(s.down, s);
+								break;
+							}
+							else {
+								break;
+							}
+							hasMoved = true;
 						}
 					}
 				}
-				updateGrid();
 			}
 		}
+		
+		if (hasMoved && !gameOver() && squares.size() < 16) {
+			addSquare();
+		}
+		updateGrid();
+	}
+	
+	private void resetNeighbors(Square s) {
+		s.up = null;
+		s.down = null;
+		s.left = null;
+		s.right = null;
 	}
 	
 	private void setNeighbors(Square s) {
-		for(Square q : this.squares) {
-			if (isAdjacent(q, s)) {
-				if(q.pos[0] == s.pos[0] + 1) {
-					s.right = q;
-				}
-				else if (q.pos[0] == s.pos[0] - 1) {
-					s.left = q;
-				}
-				else if (q.pos[1] == s.pos[1] + 1) {
-					s.down = q;
-				}
-				else {
-					s.up = q;
-				}				
-			}
+		resetNeighbors(s);
+		int i = s.pos[0];
+		int j = s.pos[1];
+		if (withinBounds(s, Direction.down)) {
+			s.down = grid[i + 1][j];
 		}
-	}
-	
-	private boolean isAdjacent(Square s1, Square s2) {
-		if ((s1.pos[0] == s2.pos[0] + 1 || s1.pos[0] == s2.pos[0] - 1) && s1.pos[1] == s2.pos[1]) {
-			return true;
+		if (withinBounds(s, Direction.right)) {
+			s.right = grid[i][j + 1];
 		}
-		else if ((s1.pos[1] == s2.pos[1] + 1 || s1.pos[1] == s2.pos[1] - 1) && s1.pos[0] == s2.pos[0]) {
-			return true;
+		if (withinBounds(s, Direction.left)) {
+			s.left = grid[i][j - 1];
 		}
-		return false;
+		if (withinBounds(s, Direction.up)) {
+			s.up = grid[i - 1][j];			
+		}
+		
 	}
 	
 	private Square generateSquare() {
@@ -151,10 +195,15 @@ public class Board {
 		return new int[] {square[0], square[1]};
 	}
 	
-	private void updateGrid() {
+	public void updateGrid() {
 		clearGrid();
+		
 		for (Square s : this.squares) {
 			this.grid[s.pos[0]][s.pos[1]] = s;
+		}
+		
+		for (Square s : this.squares) {
+			setNeighbors(s);
 		}
 	}
 	
@@ -195,4 +244,30 @@ public class Board {
 			System.out.println();
 		}
 	}
+	
+	private void mergeSquares(Square s1, Square s2) {
+		if (s1.val != s2.val) {
+			return;
+		}
+		
+		this.squares.add(new Square(s1.val + s2.val, s1.pos));
+		this.squares.remove(s1);
+		this.squares.remove(s2);
+		updateGrid();
+	}
+	
+	
+	private boolean canMerge() {
+		Square[] neighbors;
+		for (Square s : this.squares) {
+			neighbors = s.getNeighbors();
+			for (Square neighbor : neighbors) {
+				if (neighbor != null && s.val == neighbor.val) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 }
