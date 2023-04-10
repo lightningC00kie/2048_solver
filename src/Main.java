@@ -5,21 +5,23 @@ import processing.core.*;
 
 public class Main extends PApplet{
 	
-	Board board = new Board();
+	static Board board = new Board();
+	
 	public static void main(String[] args) {
 //		Direction[] dirs = {Direction.up, Direction.down, Direction.right, Direction.left};
 //		Random rnd = new Random();
-//		
 //		Player player = new Player(board);
-//		int index;
-//		Direction d;
-//		for (int i = 0; i < 10; i++) {
-//			index = rnd.nextInt(4);
-//			d = dirs[index];
-//			player.makeMove(d);
+		PApplet.main("Main");
+
+//		while (!board.gameOver()) {
+//			try {
+//				board.moveSquares(player.bestMove());
+//			} catch (CloneNotSupportedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 //		}
 
-		PApplet.main("Main");
 	}
 
 	public void settings() {
@@ -91,6 +93,7 @@ public class Main extends PApplet{
     }
     
     public void keyPressed() {
+//    	player.bestMove();
 	    if (keyCode == UP || key == 'w') {
     	  System.out.println("up");
 	      board.moveSquares(Direction.up);
@@ -106,7 +109,7 @@ public class Main extends PApplet{
 	    }
 	    
 	    if (board.gameOver()) {
-	    	exit();
+//	    	exit();
 	    }
     }
 }

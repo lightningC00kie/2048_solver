@@ -4,7 +4,7 @@ import java.util.List;
 //import java.util.Map;
 import java.util.Random;
 
-public class Board {
+public class Board implements Cloneable {
 	private int boardSize = 4;
 	public List<Square> squares = new ArrayList<Square>();
 	public Square[][] grid = new Square[boardSize][boardSize];
@@ -14,7 +14,7 @@ public class Board {
 	}
 	
 	public boolean gameOver() {
-		if (squares.size() == 16 && !canMerge()) {
+		if (squares.size() == 16 && !canMove()) {
 			return true;
 		}
 		return false;
@@ -23,13 +23,13 @@ public class Board {
 	public void addSquare() {
 		squares.add(generateSquare());
 		updateGrid();
-		writeBoard();
+//		writeBoard();
 	}
 	
-	public void moveSquares (Direction d) {
+	public boolean moveSquares (Direction d) {
 		boolean hasMoved = false;
 		if (d == Direction.up) {
-			System.out.println("moving up");
+//			System.out.println("moving up");
 			
 			for (int i = 0; i < boardSize; i++) {
 				for (int j = 0; j < boardSize; j++) {
@@ -58,7 +58,7 @@ public class Board {
 		}
 		
 		if (d == Direction.right) {
-			System.out.println("moving right");
+//			System.out.println("moving right");
 			
 			for (int i = 0; i < boardSize; i++) {
 				for (int j = boardSize - 1; j >= 0; j--) {
@@ -85,7 +85,7 @@ public class Board {
 		}
 		
 		if (d == Direction.left) {
-			System.out.println("moving left");
+//			System.out.println("moving left");
 			
 			for (int i = 0; i < boardSize; i++) {
 				for (int j = 0; j < boardSize; j++) {
@@ -112,7 +112,7 @@ public class Board {
 		}
 		
 		if (d == Direction.down) {
-			System.out.println("moving down");
+//			System.out.println("moving down");
 			
 			for (int i = boardSize - 1; i >= 0; i--) {
 				for (int j = 0; j < boardSize; j++) {
@@ -142,6 +142,7 @@ public class Board {
 			addSquare();
 		}
 		updateGrid();
+		return hasMoved;
 	}
 	
 	private void resetNeighbors(Square s) {
@@ -172,12 +173,12 @@ public class Board {
 	
 	private Square generateSquare() {
 		Random rand = new Random();
-		int val = rand.nextInt(2);
+		double val = rand.nextDouble();
 		int[] pos = getEmptySquare();
-		if (val == 0) {
-			return new Square(2, pos);
+		if (val <= 0.10) {
+			return new Square(4, pos);
 		}
-		return new Square(4, pos);
+		return new Square(2, pos);
 	}
 	
 	private int[] getEmptySquare() {
@@ -257,7 +258,7 @@ public class Board {
 	}
 	
 	
-	private boolean canMerge() {
+	public boolean canMove() {
 		Square[] neighbors;
 		for (Square s : this.squares) {
 			neighbors = s.getNeighbors();
@@ -269,5 +270,31 @@ public class Board {
 		}
 		return false;
 	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
+//	private boolean canMerge() {
+//		
+//	}
+//	
+	public int countMerges(Direction d) {
+		int merges = 0;
+		if (d == Direction.right) {
+			for (int i = 0; i < boardSize; i++) {
+				for (int j = boardSize - 1; j >= 0; j--) {
+					if (grid[i][j] != null) {
+						Square s  = grid[i][j];
+						if (s.right != null && s.val == s.right.val){
+							merges++;
+						}
+					}
+				}
+			}
+		}
+		return merges;
+	}
+	
 	
 }
