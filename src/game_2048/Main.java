@@ -1,3 +1,4 @@
+package game_2048;
 import processing.core.*;
 
 public class Main extends PApplet{

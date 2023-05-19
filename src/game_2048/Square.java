@@ -1,3 +1,4 @@
+package game_2048;
 
 import java.util.HashMap;
 import java.util.Map;

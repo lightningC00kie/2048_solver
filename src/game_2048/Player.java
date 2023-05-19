@@ -1,3 +1,4 @@
+package game_2048;
 
 public class Player {
 	Board b;
