@@ -1,6 +1,3 @@
-
-//import java.util.Random;
-
 import processing.core.*;
 
 public class Main extends PApplet{
@@ -56,6 +53,8 @@ public class Main extends PApplet{
 
     }
     
+    
+    // draw the board
     public void drawGrid() {
     	noStroke();
     	fill(193, 175, 158);
@@ -74,6 +73,8 @@ public class Main extends PApplet{
     	}
     }
 
+    // draw the squares on the grid and add them to the board
+    // a color based on the value is assigned to each square
     public void drawSquare(Square s) {
     	float[] coords = s.getCoords();
     	Integer[] color = s.getColor();
@@ -92,10 +93,12 @@ public class Main extends PApplet{
     	
     }
     
+    // move the board in a specified direction
+    // based on keypresses
     public void keyPressed() {
 //    	player.bestMove();
 	    if (keyCode == UP || key == 'w') {
-    	  System.out.println("up");
+//    	  System.out.println("up");
 	      board.moveSquares(Direction.up);
 	    } 
 	    if (keyCode == DOWN || key == 's') {
@@ -109,7 +112,7 @@ public class Main extends PApplet{
 	    }
 	    
 	    if (board.gameOver()) {
-//	    	exit();
+	    	exit();
 	    }
     }
 }
